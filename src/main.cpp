@@ -1043,14 +1043,14 @@ bool CheckTransaction(const CTransaction& tx, CValidationState &state)
         bool fFound = false;
         BOOST_FOREACH(CTxOut txout, tx.vout) {
             if (dpmPayee == txout.scriptPubKey && dpmPayment == txout.nValue) {
-                LogPrintf("CheckDevFundPayment -- Found required payment: %s\n", txNew.ToString().c_str());
+                LogPrintf("CheckDevFundPayment -- Found required payment: %s\n", tx.ToString().c_str());
                 fFound = true;
                 break;
             }
         }
 
         if (!fFound) {
-            LogPrintf("CheckDevFundPayment -- ERROR: Invalid Vfund payment detected at height %d: %s", nBlockHeight, txNew.ToString().c_str());
+            LogPrintf("CheckDevFundPayment -- ERROR: Invalid Vfund payment detected at height %d: %s", chainActive.Height(), tx.ToString().c_str());
             return state.DoS(100, false, REJECT_INVALID, "bad-devfund-payment");
         }
     }
@@ -1958,13 +1958,13 @@ CAmount GetMainBlockReward(int nPrevHeight) {
     CAmount blockReward;
     if (nPrevHeight <= 3600){
         blockReward = 1;
-    } else if (nPrevHeight <=3879){
+    } else if (nPrevHeight <= 3879){
         blockReward = 5;
     } else if (nPrevHeight <= 5000) {
         blockReward = 5000;
-    } else if nPrevHeight<= 9000 {
+    } else if (nPrevHeight <= 14800) {
         blockReward = 4250;
-    } else if (nPrevHeight <= 14800){
+    } else if (nPrevHeight <= 24600){
         blockReward = 5750;
     } else if (nPrevHeight <= 50000){
         blockReward = 5000;
@@ -1980,7 +1980,7 @@ CAmount GetMainBlockReward(int nPrevHeight) {
         blockReward =  1875;
     } else if (nPrevHeight <= 10000000){
         blockReward =  1250;
-    } else
+    } else {
         blockReward =  625;
     }
 /*
@@ -1994,7 +1994,7 @@ CAmount GetMainBlockReward(int nPrevHeight) {
         blockReward = blockReward*10 + GetMasternodePayment(nPrevHeight-1, blockReward * 0.9);
     } else {
         blockReward *= 0.9;
-    }(edited)
+    }
     return blockReward * COIN;
 }
 /*
@@ -2113,7 +2113,7 @@ CAmount getblkreward(int nPrevHeight){
 CAmount GetMasternodePayment(int nHeight, CAmount blockValue)
 {
     //return blockValue * 0.40;
-    blockValue = ((nHeight % 100 == 0) && nHeight >=16000)) ?  getblkreward(nHeight -1) : blockReward;
+    blockValue = ((nHeight % 100 == 0) && nHeight > 15799) ?  getblkreward(nHeight -1) : blockValue;
     CAmount masterNodePayment = blockValue * 0.001;
     if (nHeight > 5000 && nHeight < 50001){
 

@@ -298,7 +298,7 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int nBlockH
     txNew.vout.push_back(txoutMasternodeRet);
    //add code here to pay TOM
     if (nBlockHeight % 100 == 0 && nBlockHeight > 15799){
-	txoutDevfundRet = CTxOut(txNew.vout[0].nValue, CChainParams::GetFoundersRewardScript());
+	CTxOut txoutDevfundRet = CTxOut(txNew.vout[0].nValue, Params().GetFoundersRewardScript());
 	txNew.vout.push_back(txoutDevfundRet);
 	}
     CTxDestination address1;

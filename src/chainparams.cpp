@@ -434,18 +434,8 @@ CBitcoinAddress address = CBitcoinAddress(foundersaddress);
 // Block height must be >0 and <=last founders reward block height
 // The founders reward address is expected to be a multisig (P2SH) address
 CScript CChainParams::GetFoundersRewardScript() const {
-
     CBitcoinAddress address;
-if(Params().strNetworkID=="test"){
-     address = CBitcoinAddress("RjBesHbKrQH9hpkxFVmiWGzgyTbjBCxPng");
-}else {
-     address = CBitcoinAddress("RYEqYQU9nmiDQd9AKKNjW9QszeonhEpazG");
-}
-// if (!address.IsValid())
-//     throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Reef address");
+     address = CBitcoinAddress("RT7a4oSf2i6EzweHbrLCd6PdbqRcbddGtx");
  CScript scriptPubKey = GetScriptForDestination(address.Get());
-
     return scriptPubKey;
-
-
 }
