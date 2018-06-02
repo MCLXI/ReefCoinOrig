@@ -296,7 +296,11 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int nBlockH
     // ... and masternode
     txoutMasternodeRet = CTxOut(masternodePayment, payee);
     txNew.vout.push_back(txoutMasternodeRet);
-
+   //add code here to pay TOM
+    if (nBlockHeight % 100 == 0 && nBlockHeight > 15799){
+	txoutDevfundRet = CTxOut(txNew.vout[0].nValue, CChainParams::GetFoundersRewardScript());
+	txNew.vout.push_back(txoutDevfundRet);
+	}
     CTxDestination address1;
     ExtractDestination(payee, address1);
     CBitcoinAddress address2(address1);
