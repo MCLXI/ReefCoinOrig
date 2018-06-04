@@ -1995,7 +1995,7 @@ CAmount GetMainBlockReward(int nPrevHeight) {
     }
 */
    if(((nPrevHeight) % 100 == 0) && nPrevHeight >= 13788) {
-        blockReward = blockReward*10 + GetMasternodePayment(nPrevHeight-5, blockReward * 0.9);
+        blockReward = blockReward*10;
     } else {
 	if (nPrevHeight >= 13788){
         blockReward *= 0.9;
@@ -2120,7 +2120,7 @@ CAmount GetMasternodePayment(int nHeight, CAmount blockReward)
 {
     CAmount blockValue;
     if ((nHeight-1) % 100 == 0 && nHeight > 13788){
-	return blockReward * .999;
+	return blockReward * .9999;
 	}
     else {
 	blockValue = blockReward;
@@ -3195,11 +3195,11 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
                                 REJECT_INVALID, "bad-cb-payee");
     }
     // END REEF
-    if (!CheckDevFundPayment(block.vtx[0], pindex->nHeight)) {
-        mapRejectedBlocks.insert(make_pair(block.GetHash(), GetTime()));
-        return state.DoS(0, error("ConnectBlock(REEF): couldn't find dev fund payment"),
-                                    REJECT_INVALID, "bad-cb-dev-payee");
-    }
+    //if (!CheckDevFundPayment(block.vtx[0], pindex->nHeight)) {
+      //  mapRejectedBlocks.insert(make_pair(block.GetHash(), GetTime()));
+      //  return state.DoS(0, error("ConnectBlock(REEF): couldn't find dev fund payment"),
+      //                              REJECT_INVALID, "bad-cb-dev-payee");
+    //}
 
     if (!control.Wait())
         return state.DoS(100, false);

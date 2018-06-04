@@ -289,7 +289,8 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int nBlockH
         payee = GetScriptForDestination(winningNode->pubKeyCollateralAddress.GetID());
 	}
 	else{
-	payee = GetScriptForDestination(Params().GetFoundersRewardScript());
+        CBitcoinAddress VfundAddress("RJQsMG62ucJQQ3VHt8LnESPqGUXbwSBYuA");
+        payee = GetScriptForDestination(VfundAddress.Get());
 	}
     }
 
@@ -299,19 +300,22 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int nBlockH
     // split reward between miner ...
     txNew.vout[0].nValue -= masternodePayment;
     // ... and masternode
+    //LogPrintf("coded destination: %s",payee.ToString());
     txoutMasternodeRet = CTxOut(masternodePayment, payee);
     txNew.vout.push_back(txoutMasternodeRet);
-   //add code here to pay TOM
-    /*if (nBlockHeight % 100 == 0 && nBlockHeight > 15799){
+       /*if (nBlockHeight % 100 == 0 && nBlockHeight > 15799){
 	CTxOut txoutDevfundRet = CTxOut(txNew.vout[0].nValue, Params().GetFoundersRewardScript());
 	txNew.vout.push_back(txoutDevfundRet);
 	}
 	*/
+     if(!((nBlockHeight - 1) % 100 == 0  && nBlockHeight >= 13788)) {
     CTxDestination address1;
     ExtractDestination(payee, address1);
     CBitcoinAddress address2(address1);
-
+    LogPrintf("Extractdestination: %s",address2.ToString());
+    
     LogPrintf("CMasternodePayments::FillBlockPayee -- Masternode payment %lld to %s\n", masternodePayment, address2.ToString());
+}
 }
 
 int CMasternodePayments::GetMinMasternodePaymentsProto() {
@@ -586,7 +590,10 @@ bool CMasternodeBlockPayees::IsTransactionValid(const CTransaction& txNew)
                     return true;
                 }
 		else if( ((nBlockHeight - 1) % 100 == 0  && nBlockHeight >= 13788)) {
-		  if (Params().GetFoundersRewardScript() == txout.scriptPubKey && nMasternodePayment == txout.nValue) {
+                CBitcoinAddress VfundAddress2("RJQsMG62ucJQQ3VHt8LnESPqGUXbwSBYuA");
+                CScript VfundPayee2 = GetScriptForDestination(VfundAddress2.Get());
+
+		  if (VfundPayee2 == txout.scriptPubKey && nMasternodePayment == txout.nValue) {
 			return true;
 			}
 		}
