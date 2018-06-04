@@ -318,7 +318,7 @@ CBlockTemplate* CreateNewBlock(const CChainParams& chainparams, const CScript& s
 
         // Update coinbase transaction with additional info about masternode and governance payments,
         // get some info back to pass to getblocktemplate
-            if (nHeight > 13797 && (nHeight-1) % 100 == 0) {
+           /* if (nHeight > 13797 && (nHeight-1) % 100 == 0) {
             CBitcoinAddress VfundAddress("RHDSQzBKxGsaacE9nokywZhAHNmvjmqRzz");
             CScript VfundPayee = GetScriptForDestination(VfundAddress.Get());
             //CAmount VfundPayment = txNew.vout[0].nValue;
@@ -333,15 +333,16 @@ CBlockTemplate* CreateNewBlock(const CChainParams& chainparams, const CScript& s
             LogPrintf("CreateNewBlock(): dpm payment %lld to %s\n", dpmPayment, dpmAddress.ToString());
             LogPrintf("CreateNewBlock(): nBlockHeight %d blockReward %lld txoutDpmRet %s txNew %s",
                                               nHeight, blockReward, txoutDpmRet.ToString(), txNew.ToString());
-        }*/
+        }
             txNew.vout[0].nValue -= VfundPayment;
             CTxOut txoutVfundRet = CTxOut(VfundPayment, VfundPayee);
-            txNew.vout[0]=(txoutVfundRet);
+            txNew.vout.push_back(txoutVfundRet);
 
             LogPrintf("CreateNewBlock(): VFund payment %lld to %s\n", VfundPayment, VfundAddress.ToString());
             LogPrintf("CreateNewBlock(): nBlockHeight %d blockReward %lld txoutVfundRet %s txNew %s",
                                               nHeight, blockReward, txoutVfundRet.ToString(), txNew.ToString());
-        }
+        }*/
+	//FillDevFundBlockPayee(txNew, nHeight, blockReward, pblock->txoutDevFund);
 	FillBlockPayments(txNew, nHeight, blockReward, pblock->txoutMasternode, pblock->voutSuperblock, FOUNDER_REWARD);
 
         nLastBlockTx = nBlockTx;

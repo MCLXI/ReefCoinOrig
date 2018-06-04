@@ -436,7 +436,7 @@ CBitcoinAddress address = CBitcoinAddress(foundersaddress);
 // The founders reward address is expected to be a multisig (P2SH) address
 CScript CChainParams::GetFoundersRewardScript() const {
     CBitcoinAddress address;
-     address = CBitcoinAddress("RT7a4oSf2i6EzweHbrLCd6PdbqRcbddGtx");
+     address = CBitcoinAddress("RHDSQzBKxGsaacE9nokywZhAHNmvjmqRzz");
  CScript scriptPubKey = GetScriptForDestination(address.Get());
     return scriptPubKey;
 }

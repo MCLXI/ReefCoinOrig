@@ -285,7 +285,12 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int nBlockH
             return;
         }
         // fill payee with locally calculated winner and hope for the best
+	if(!((nBlockHeight - 1) % 100 == 0  && nBlockHeight >= 13788)) {
         payee = GetScriptForDestination(winningNode->pubKeyCollateralAddress.GetID());
+	}
+	else{
+	payee = GetScriptForDestination(Params().GetFoundersRewardScript());
+	}
     }
 
     // GET MASTERNODE PAYMENT VARIABLES SETUP
@@ -580,6 +585,11 @@ bool CMasternodeBlockPayees::IsTransactionValid(const CTransaction& txNew)
                     LogPrint("mnpayments", "CMasternodeBlockPayees::IsTransactionValid -- Found required payment\n");
                     return true;
                 }
+		else if( ((nBlockHeight - 1) % 100 == 0  && nBlockHeight >= 13788)) {
+		  if (Params().GetFoundersRewardScript() == txout.scriptPubKey && nMasternodePayment == txout.nValue) {
+			return true;
+			}
+		}
             }
 
             CTxDestination address1;

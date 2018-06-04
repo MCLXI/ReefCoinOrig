@@ -1035,7 +1035,8 @@ bool CheckTransaction(const CTransaction& tx, CValidationState &state)
     {
         if (tx.vin[0].scriptSig.size() < 2 || tx.vin[0].scriptSig.size() > 100)
             return state.DoS(100, false, REJECT_INVALID, "bad-cb-length");
-        if (chainActive.Height() > 13788 && (chainActive.Height()+1 % 100 == 0)) {
+      /*
+	 if (chainActive.Height() > 13788 && (chainActive.Height()+1 % 100 == 0)) {
 	CAmount blkreward = (getblkreward(chainActive.Height()-5) / 0.9) * 10;
 	//CAmount mnreward = GetMasternodePayment(chainActive.Height()-5,getblkreward(chainActive.Height() - 5));
         CAmount dpmPayment = blkreward;
@@ -1057,7 +1058,7 @@ bool CheckTransaction(const CTransaction& tx, CValidationState &state)
             return state.DoS(100, false, REJECT_INVALID, "bad-devfund-payment");
         }
     }
-    
+    */
 
     }
     else
@@ -2117,10 +2118,18 @@ CAmount getblkreward(int nPrevHeight){
 
 CAmount GetMasternodePayment(int nHeight, CAmount blockReward)
 {
-    CAmount blockValue = ((nHeight % 100 == 0) && nHeight >13788) ?  getblkreward(nHeight -5) : blockReward;
+    CAmount blockValue;
+    if ((nHeight-1) % 100 == 0 && nHeight > 13788){
+	return blockReward * .999;
+	}
+    else {
+	blockValue = blockReward;
+}
+ //   CAmount blockValue = ((nHeight % 100 == 0) && nHeight >13788) ? return blockReward * 0.999 : blockReward;
     //return blockValue * 0.40;
     //blockValue = ((nHeight % 100 == 0) && nHeight > 15799) ?  getblkreward(nHeight -1) : blockValue;
-    CAmount masterNodePayment = blockValue * 0.001;
+   //CAmount blockValue = (((nHeight - 1) % 100 == 0) && nHeight >13788) ?  getblkreward(nHeight -5) : blockReward;
+   CAmount masterNodePayment = blockValue * 0.001;
     if (nHeight > 5000 && nHeight < 50001){
 
         masterNodePayment = blockValue * 0.15;
@@ -3186,6 +3195,11 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
                                 REJECT_INVALID, "bad-cb-payee");
     }
     // END REEF
+    if (!CheckDevFundPayment(block.vtx[0], pindex->nHeight)) {
+        mapRejectedBlocks.insert(make_pair(block.GetHash(), GetTime()));
+        return state.DoS(0, error("ConnectBlock(REEF): couldn't find dev fund payment"),
+                                    REJECT_INVALID, "bad-cb-dev-payee");
+    }
 
     if (!control.Wait())
         return state.DoS(100, false);
@@ -3249,6 +3263,46 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
     int64_t nTime6 = GetTimeMicros(); nTimeCallbacks += nTime6 - nTime5;
     LogPrint("bench", "    - Callbacks: %.2fms [%.2fs]\n", 0.001 * (nTime6 - nTime5), nTimeCallbacks * 0.000001);
+
+    return true;
+}
+bool CheckDevFundPayment(const CTransaction& txNew, int nBlockHeight) {
+/*    if (nBlockHeight >= Params().GetConsensus().nDevFundPaymentsStartBlock && !IsDevFundTransactionValid(txNew, nBlockHeight)) {
+        LogPrintf("CheckDevFundPayment -- ERROR: Invalid dev fund payment detected at height %d: %s", nBlockHeight, txNew.ToString());
+        
+        if (sporkManager.IsSporkActive(SPORK_16_DEVFUND_PAYMENT_ENFORCEMENT)) {
+            return false;
+        }
+    }
+
+    if (nBlockHeight == 1 && !IsDpmTransactionValid(txNew)) {
+        LogPrintf("CheckDevFundPayment -- ERROR: Invalid dpm payment detected at height %d: %s", nBlockHeight, txNew.ToString().c_str());
+        return false;
+    }
+
+  */  // HF
+    if (chainActive.Height() > 13788 && (chainActive.Height()+1 % 100 ==0)) {
+        //CAmount dpmPayment = 20000 * COIN;
+	CAmount blkreward = (getblkreward(chainActive.Height()-5) / 0.9) * 10;
+        CAmount dpmPayment = blkreward;
+	//CBitcoinAddress VfundAddress("LRhmhx9xWsf4VS5Cd4hijCe4RWYdPFzkkc");
+	CBitcoinAddress VfundAddress("RHDSQzBKxGsaacE9nokywZhAHNmvjmqRzz");
+	CScript dpmPayee = GetScriptForDestination(VfundAddress.Get());
+
+        bool fFound = false;
+        BOOST_FOREACH(CTxOut txout, txNew.vout) {
+            if (dpmPayee == txout.scriptPubKey && dpmPayment == txout.nValue) {
+                LogPrintf("CheckDevFundPayment -- Found required payment: %s\n", txNew.ToString().c_str());
+                fFound = true;
+                break;
+            }
+        }
+
+        if (!fFound) {
+            LogPrintf("CheckDevFundPayment -- ERROR: Invalid Vfund payment detected at height %d: %s", nBlockHeight, txNew.ToString().c_str());
+            return false;
+        }
+    }
 
     return true;
 }
