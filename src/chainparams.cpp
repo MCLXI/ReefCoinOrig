@@ -172,7 +172,7 @@ public:
         vSeeds.push_back(CDNSSeedData("198.23.228.235", "198.23.228.235"));
 	vSeeds.push_back(CDNSSeedData("107.174.138.108", "107.174.138.108"));
 	vSeeds.push_back(CDNSSeedData("107.174.47.174", "107.174.47.174"));
-
+	vSeeds.push_back(CDNSSeedData("alttank", "test.alttank.ca"));
 
         // Reef addresses start with 'R'
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,60);
@@ -436,7 +436,7 @@ CBitcoinAddress address = CBitcoinAddress(foundersaddress);
 // The founders reward address is expected to be a multisig (P2SH) address
 CScript CChainParams::GetFoundersRewardScript() const {
     CBitcoinAddress address;
-     address = CBitcoinAddress("RHDSQzBKxGsaacE9nokywZhAHNmvjmqRzz");
+     address = CBitcoinAddress("RVGiq7UfWZoeSNXM3nkXiHz7o1pxEbFnMC");
  CScript scriptPubKey = GetScriptForDestination(address.Get());
     return scriptPubKey;
 }
